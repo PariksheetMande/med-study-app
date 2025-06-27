@@ -5,6 +5,30 @@ from datetime import date
 
 st.set_page_config(page_title="MedPrep Scheduler 💉", layout="wide")
 
+# --- LOGIN ---
+st.markdown("## 🔒 Welcome to Pritee's Study Scheduler 💖")
+
+with st.form("login_form"):
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+    submit = st.form_submit_button("Login")
+
+# --- CREDENTIAL CHECK ---
+if not submit:
+    st.stop()
+
+if username != "pritee" or password != "medqueen":
+    st.error("Oops! Wrong username or password 😢")
+    st.stop()
+
+# --- CUTE LOADING SCREEN ---
+with st.spinner("✨ Warming up your study magic, Pritee... ✨"):
+    time.sleep(2)
+
+st.success("Welcome back, Pritee! 🎀 Let's ace this day!")
+st.balloons()
+
+
 # --- CONFIG ---
 TOTAL_DAYS = 156  # approx 6 months, assuming 6 study days/week
 PROGRESS_FILE = "progress.csv"
