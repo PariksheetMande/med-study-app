@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import random
+import time
 from datetime import date
 
 st.set_page_config(page_title="MedPrep Scheduler 💉", layout="wide")
