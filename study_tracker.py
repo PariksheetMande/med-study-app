@@ -122,19 +122,18 @@ if videos_per_day > 0:
 else:
     days_passed = 0
 start_day = datetime.today() - timedelta(days=days_passed)
-
-    dates = [start_day + timedelta(days=i) for i in range(TOTAL_DAYS)]
-    ideal = [total_remaining - (i * videos_per_day) for i in range(TOTAL_DAYS)]
-    actual = [max(total_remaining - df["Watched"].sum(), 0)] + [None]*(TOTAL_DAYS-1)
+dates = [start_day + timedelta(days=i) for i in range(TOTAL_DAYS)]
+ideal = [total_remaining - (i * videos_per_day) for i in range(TOTAL_DAYS)]
+actual = [max(total_remaining - df["Watched"].sum(), 0)] + [None]*(TOTAL_DAYS-1)
     
-    plt.figure(figsize=(10, 4))
-    plt.plot(dates, ideal, label="Ideal Trajectory")
-    plt.axhline(y=total_remaining - df["Watched"].sum(), color='r', linestyle='--', label="Current Position")
-    plt.xlabel("Date")
-    plt.ylabel("Remaining Videos")
-    plt.title("Progress Tracker")
-    plt.legend()
-    st.pyplot(plt)
+plt.figure(figsize=(10, 4))
+plt.plot(dates, ideal, label="Ideal Trajectory")
+plt.axhline(y=total_remaining - df["Watched"].sum(), color='r', linestyle='--', label="Current Position")
+plt.xlabel("Date")
+plt.ylabel("Remaining Videos")
+plt.title("Progress Tracker")
+plt.legend()
+st.pyplot(plt)
 
 # --- CALENDAR TAB ---
 with calendar_tab:
