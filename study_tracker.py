@@ -17,7 +17,7 @@ with st.form("login_form"):
 if not submit:
     st.stop()
 
-if username != "pritee" or password != "medqueen":
+if username != "priteekanase" or password != "hazelnuit":
     st.error("Oops! Wrong username or password 😢")
     st.stop()
 
