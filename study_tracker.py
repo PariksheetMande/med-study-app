@@ -124,3 +124,77 @@ st.markdown("### 📊 Module Progress")
 for module, row in df.iterrows():
     percent = int((row["Watched"] / row["Total"]) * 100) if row["Total"] > 0 else 0
     st.progress(percent, text=f"{module} ({percent}%)")
+
+# --- STREAK TRACKING ---
+st.markdown("### 🔥 Your Study Streak")
+
+STREAK_FILE = "streak.json"
+
+def load_streak():
+    try:
+        with open(STREAK_FILE, "r") as f:
+            return json.load(f)
+    except:
+        return {"last_date": "", "current": 0, "best": 0}
+
+def save_streak(streak_data):
+    with open(STREAK_FILE, "w") as f:
+        json.dump(streak_data, f)
+
+today_str = date.today().isoformat()
+streak = load_streak()
+
+# Check if a new day has passed
+last_date = streak["last_date"]
+if last_date != today_str:
+    if last_date and (date.fromisoformat(today_str) - date.fromisoformat(last_date)).days == 1:
+        streak["current"] += 1
+    else:
+        streak["current"] = 1
+    streak["best"] = max(streak["best"], streak["current"])
+    streak["last_date"] = today_str
+    save_streak(streak)
+
+# Show current and best streak
+st.success(f"🔥 Current Streak: {streak['current']} days")
+st.info(f"🏅 Best Streak: {streak['best']} days")
+
+# 🎉 Confetti if hitting 7-day or 14, 21... etc
+if streak["current"] in [7, 14, 21, 30, 50, 100]:
+    st.balloons()
+    st.success("🎉 Woohoo! You hit a streak milestone!")
+
+# --- DAILY STUDY CALENDAR ---
+st.markdown("### 📅 6-Month Study Calendar")
+
+calendar = []
+current_day = date.today()
+
+daily_plan = []
+
+# Recalculate daily targets
+df["Remaining"] = df["Total"] - df["Watched"]
+total_remaining = df["Remaining"].sum()
+videos_per_day = max(total_remaining // TOTAL_DAYS, 1)
+df["Weight"] = df["Remaining"] / total_remaining
+df["Daily"] = (df["Weight"] * videos_per_day).round().astype(int)
+
+for day in range(TOTAL_DAYS):
+    day_plan = {
+        "Date": (current_day + timedelta(days=day)).isoformat(),
+        "Plan": {}
+    }
+    for module, row in df.iterrows():
+        if row["Watched"] >= row["Total"]:
+            day_plan["Plan"][module] = "✅"
+        elif row["Daily"] > 0:
+            day_plan["Plan"][module] = f"{int(row['Daily'])} videos"
+    daily_plan.append(day_plan)
+
+# Show the next 7 days
+st.markdown("#### 🗓️ This Week's Plan")
+for i in range(7):
+    entry = daily_plan[i]
+    st.write(f"**{entry['Date']}**")
+    for mod, task in entry["Plan"].items():
+        st.markdown(f"- {mod}: **{task}**")
