@@ -3,6 +3,7 @@ import pandas as pd
 import random
 import json
 import os
+import time
 from datetime import date, timedelta, datetime
 import matplotlib.pyplot as plt
 
@@ -10,8 +11,8 @@ import matplotlib.pyplot as plt
 TOTAL_DAYS = 156  # 6 months (approx 6 study days/week)
 PROGRESS_FILE = "progress.csv"
 STREAK_FILE = "streak.json"
-USERNAME = "pritee"
-PASSWORD = "1234"
+USERNAME = "priteekanase"
+PASSWORD = "hazelnuit"
 
 # --- UI CONFIG ---
 st.set_page_config(page_title="MedPrep for Pritee 💖", layout="wide")
@@ -19,7 +20,7 @@ st.set_page_config(page_title="MedPrep for Pritee 💖", layout="wide")
 # --- LOADING SCREEN ---
 st.image("https://images.unsplash.com/photo-1519682337058-a94d519337bc", caption="Loading... Studying never looked this good 📚")
 st.markdown("<h3 style='text-align: center;'>Booting up your personalized MedPrep dashboard...✨</h3>", unsafe_allow_html=True)
-st.sleep(2)
+time.sleep(2)
 
 # --- AUTH ---
 with st.sidebar:
