@@ -62,15 +62,15 @@ st.subheader("Custom Daily Plan — Just for You 💖")
 
 # --- TODAY'S PLAN ---
 st.markdown(f"### 📅 Study Plan for Today ({date.today()})")
-for _, row in df.iterrows():
+for module, row in df.iterrows():
     if row["Today"] > 0:
-        st.write(f"**{row['Module']}** — Watch **{row['Today']}** videos")
+        st.write(f"**{module}** — Watch **{row['Today']}** videos")
 
 # --- PROGRESS TRACKING ---
 st.markdown("### 📈 Update Your Progress")
 edited_df = df.copy()
 for i, row in df.iterrows():
-    new_val = st.slider(f"{row['Module']}", 0, row["Total"], int(row["Watched"]))
+    new_val = st.slider(f"{['Module']}", 0, row["Total"], int(row["Watched"]))
     edited_df.at[i, "Watched"] = new_val
 
 # --- SAVE PROGRESS ---
@@ -93,4 +93,4 @@ st.info(random.choice(quotes))
 st.markdown("### 📊 Module Progress")
 for _, row in df.iterrows():
     percent = int((row["Watched"] / row["Total"]) * 100)
-    st.progress(percent, text=f"{row['Module']} ({percent}%)")
+    st.progress(percent, text=f"{['Module']} ({percent}%)")
