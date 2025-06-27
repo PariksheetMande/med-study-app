@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import random
@@ -7,7 +6,7 @@ from datetime import date
 st.set_page_config(page_title="MedPrep Scheduler 💉", layout="wide")
 
 # --- CONFIG ---
-TOTAL_DAYS = 156  # approx 6 months, 6 study days/week
+TOTAL_DAYS = 156  # approx 6 months, assuming 6 study days/week
 PROGRESS_FILE = "progress.csv"
 
 # --- INITIAL MODULE DATA ---
@@ -36,21 +35,24 @@ default_modules = {
 # --- LOAD OR INIT CSV ---
 def load_progress():
     try:
-        return pd.read_csv(PROGRESS_FILE, index_col=0)
+        df = pd.read_csv(PROGRESS_FILE, index_col=0)
     except FileNotFoundError:
         df = pd.DataFrame([
             {"Module": m, "Watched": w, "Total": t}
             for m, (w, t) in default_modules.items()
         ])
-        df.to_csv(PROGRESS_FILE, index=False)
-        return df
+        df.set_index("Module", inplace=True)
+        df.to_csv(PROGRESS_FILE)
+    df["Watched"] = df["Watched"].fillna(0).astype(int)
+    df["Total"] = df["Total"].fillna(0).astype(int)
+    return df
 
 df = load_progress()
 
 # --- CALCULATE DAILY PLAN ---
 df["Remaining"] = df["Total"] - df["Watched"]
 total_remaining = df["Remaining"].sum()
-videos_per_day = total_remaining // TOTAL_DAYS
+videos_per_day = max(total_remaining // TOTAL_DAYS, 1)
 
 # Weighted allocation
 df["Weight"] = df["Remaining"] / total_remaining
@@ -70,9 +72,10 @@ for module, row in df.iterrows():
 st.markdown("### 📈 Update Your Progress")
 edited_df = df.copy()
 for module, row in df.iterrows():
-    new_val = st.slider(f"{module}", 0, row["Total"], int(row["Watched"]))
+    total = int(row["Total"]) if not pd.isna(row["Total"]) else 0
+    watched = int(row["Watched"]) if not pd.isna(row["Watched"]) else 0
+    new_val = st.slider(f"{module}", 0, total, watched)
     edited_df.at[module, "Watched"] = new_val
-
 
 # --- SAVE PROGRESS ---
 if st.button("💾 Save Progress"):
@@ -93,6 +96,6 @@ st.info(random.choice(quotes))
 
 # --- PROGRESS BARS ---
 st.markdown("### 📊 Module Progress")
-for _, row in df.iterrows():
-    percent = int((row["Watched"] / row["Total"]) * 100)
-    st.progress(percent, text=f"{['Module']} ({percent}%)")
+for module, row in df.iterrows():
+    percent = int((row["Watched"] / row["Total"]) * 100) if row["Total"] > 0 else 0
+    st.progress(percent, text=f"{module} ({percent}%)")
