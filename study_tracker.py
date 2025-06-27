@@ -121,7 +121,6 @@ if videos_per_day > 0:
     days_passed = watched_total // videos_per_day
 else:
     days_passed = 0
-
 start_day = datetime.today() - timedelta(days=days_passed)
 
     dates = [start_day + timedelta(days=i) for i in range(TOTAL_DAYS)]
