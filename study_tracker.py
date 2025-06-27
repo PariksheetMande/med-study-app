@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 import random
 import json
 import time
@@ -199,3 +200,34 @@ for i in range(7):
     st.write(f"**{entry['Date']}**")
     for mod, task in entry["Plan"].items():
         st.markdown(f"- {mod}: **{task}**")
+
+# --- 📉 Progress vs Ideal Trajectory Chart ---
+st.markdown("### 📈 Progress vs Ideal Study Trajectory")
+
+# Load total and watched
+total_videos = df["Total"].sum()
+watched_videos = df["Watched"].sum()
+
+# Calculate days since start
+start_date = datetime(2024, 7, 1)  # Set the actual start date here
+today = datetime.today()
+days_passed = (today - start_date).days
+days_total = TOTAL_DAYS
+
+# Actual progress
+actual_progress = watched_videos
+
+# Ideal progress
+ideal_progress = (days_passed / days_total) * total_videos
+
+# Plot
+fig, ax = plt.subplots(figsize=(10, 4))
+ax.plot([0, days_total], [0, total_videos], 'r--', label='Ideal Progress')
+ax.plot(days_passed, actual_progress, 'bo', label='Your Progress')
+ax.fill_between([0, days_passed], [0, actual_progress], color="skyblue", alpha=0.3)
+ax.set_xlabel("Days")
+ax.set_ylabel("Videos Watched")
+ax.set_title("Study Progress Tracker")
+ax.legend()
+
+st.pyplot(fig)
