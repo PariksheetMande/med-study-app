@@ -116,7 +116,14 @@ with update_tab:
 # --- PROGRESS GRAPH TAB ---
 with chart_tab:
     st.header("📊 Ideal vs Actual Trajectory")
-    start_day = datetime.today() - timedelta(days=(df["Watched"].sum() // videos_per_day))
+    watched_total = df["Watched"].sum()
+if videos_per_day > 0:
+    days_passed = watched_total // videos_per_day
+else:
+    days_passed = 0
+
+start_day = datetime.today() - timedelta(days=days_passed)
+
     dates = [start_day + timedelta(days=i) for i in range(TOTAL_DAYS)]
     ideal = [total_remaining - (i * videos_per_day) for i in range(TOTAL_DAYS)]
     actual = [max(total_remaining - df["Watched"].sum(), 0)] + [None]*(TOTAL_DAYS-1)
