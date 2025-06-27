@@ -69,13 +69,15 @@ for module, row in df.iterrows():
 # --- PROGRESS TRACKING ---
 st.markdown("### 📈 Update Your Progress")
 edited_df = df.copy()
-for i, row in df.iterrows():
-    new_val = st.slider(f"{['Module']}", 0, row["Total"], int(row["Watched"]))
-    edited_df.at[i, "Watched"] = new_val
+for module, row in df.iterrows():
+    new_val = st.slider(f"{module}", 0, row["Total"], int(row["Watched"]))
+    edited_df.at[module, "Watched"] = new_val
+
 
 # --- SAVE PROGRESS ---
 if st.button("💾 Save Progress"):
-    edited_df.drop(columns=["Remaining", "Weight", "Today"]).to_csv(PROGRESS_FILE)
+    edited_df_to_save = edited_df.drop(columns=["Remaining", "Weight", "Today"]).reset_index()
+    edited_df_to_save.to_csv(PROGRESS_FILE, index=False)
     st.success("Progress saved!")
 
 # --- FUNNY MOTIVATION ---
